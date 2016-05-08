@@ -21,22 +21,28 @@ except serial.SerialException:
 input = 0
 
 while 1:
-    input = raw_input("Enter data:(no more than 2 chars): ")[:2]
-    if (input == 'qt'):
+    
+    msgData = raw_input("Enter data:(no more than 2 chars): ")[:2]
+    msgType  = raw_input("Select message type:(0 - get,1 - set):")[:1]
+    
+    if (msgData == 'qt'):
         ser.close()
         exit()
     else:
         out = ''
-        pkt = packet.packet('1',input)
+        pkt = packet.packet()
+        pkt.setType(msgType)
+        pkt.setData(msgData)
         pkt.calculateCrc()
 
         stringToSend = pkt.packetToString()
 
-        print stringToSend
+        print stringToSend     
+   
         ser.write(stringToSend)
         time.sleep(1)
-        while ser.inWaiting() > 0:
+        while (ser.inWaiting() > 0):
          out += ser.read(1)
 
         if (out != ''):
-            print(out)
+            print out
