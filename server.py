@@ -1,6 +1,11 @@
 import socket
 import sys
 
+OK  = '1'
+NOK = '0'
+passwd = 'ana'
+
+
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -22,14 +27,30 @@ while True:
 
         # Receive the data in small chunks and retransmit it
         while True:
-            data = connection.recv(16)
-            print >>sys.stderr, 'received "%s"' % data
-            if data:
-                print >>sys.stderr, 'sending data back to the client'
-                connection.sendall(data)
+
+            #first wait for password
+            data = connection.recv(len(passwd))
+
+            print data
+            print passwd
+
+            if data == passwd:
+                connection.sendall(OK)
+                
+                #read messages
+                data = connection.recv(16)
+                print >>sys.stderr, 'received "%s"' % data
+                if data:
+                    print >>sys.stderr, 'sending data back to the client'
+                    connection.sendall(data)
+                else:
+                    print >>sys.stderr, 'no more data from', client_address
+                    break
             else:
-                print >>sys.stderr, 'no more data from', client_address
-                break
+                print("AUTHENTICATION FAILED")
+                connection.sendall(NOK)
+
+                break;
             
     finally:
         # Clean up the connection
