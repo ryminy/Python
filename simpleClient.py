@@ -1,27 +1,47 @@
 #!/usr/bin/env python
 
 """
-An echo client that allows the user to send multiple lines to the server.
-Entering a blank line will exit the client.
+An echo client that allows the user to send a char to the server.
+Entering 'x' will exit the client.
 """
 
 import socket
 import sys
 
 host = 'localhost'
-port = 50000
-size = 1024
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect((host,port))
-sys.stdout.write('%')
+port = 10000
+size = 1
 
-while 1:
-    # read from keyboard
-    line = sys.stdin.readline()
-    if line == ' ':
-        break
-    s.send(line)
-    data = s.recv(size)
-    sys.stdout.write(data)
-    sys.stdout.write('%')
+val = ' '
+while True:
+    try:
+
+      # read from keyboard
+      val = input("please enter a char:")
+      if val == 'x':
+       break
+     
+      if val < '0':
+       break
+      
+      if val > 'z':
+       break
+     
+      print("connection to server")
+      s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      s.connect((host,port))
+      
+      print("sending to server")
+      s.send(val.encode())
+      
+      print("receiving from server")
+      data = s.recv(1)
+      print(data.decode())
+      
+      s.close()
+	
+    except KeyboardInterrupt:
+     print("silently dying")
+     break
+
 s.close() 
