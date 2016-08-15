@@ -1,5 +1,6 @@
 import time
 import serial
+
         
 def packetSendAndReceive(data):
     out = ''

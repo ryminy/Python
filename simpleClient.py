@@ -31,14 +31,14 @@ while True:
       s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       s.connect((host,port))
       
-      print("sending to server")
       s.send(val.encode())
       
       print("receiving from server")
       data = s.recv(1)
+      s.close()
+
       print(data.decode())
       
-      s.close()
 	
     except KeyboardInterrupt:
      print("silently dying")

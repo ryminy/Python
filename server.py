@@ -28,8 +28,7 @@ while True:
       data = connection.recv(1)
       print(data.decode())
       output = packetSendAndReceive(data)
-
-
+      
       print('sending data back to the client')
       connection.send(output)
 	      
