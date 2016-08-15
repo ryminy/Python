@@ -1,10 +1,13 @@
 import socket
 import sys
+import packet
+
+from packet import packetSend
 
 OK  = '1'
 NOK = '0'
 passwd = 'ana'
-
+msgLen = 3
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,29 +33,34 @@ while True:
 
             #first wait for password
             data = connection.recv(len(passwd))
-
-            print data
-            print passwd
-
+	    
             if data == passwd:
+	        print >>sys.stderr, 'AUTHENTICATION PASSED', client_address
                 connection.sendall(OK)
                 
                 #read messages
-                data = connection.recv(16)
+                data = connection.recv(msgLen)
                 print >>sys.stderr, 'received "%s"' % data
                 if data:
+                    msgData = data[:2]
+                    msgType = data[-1:]
+                    
+                    output = packetSend(msgData,msgType)
                     print >>sys.stderr, 'sending data back to the client'
-                    connection.sendall(data)
+                    connection.sendall(output[:3])
+                    
+		    break
+	      
                 else:
                     print >>sys.stderr, 'no more data from', client_address
                     break
             else:
-                print("AUTHENTICATION FAILED")
+	        print >>sys.stderr, 'AUTHENTICATION FAILED', client_address
                 connection.sendall(NOK)
-
                 break;
             
     finally:
         # Clean up the connection
+	print >>sys.stderr, 'Connection closed with', client_address
         connection.close()
         

@@ -1,3 +1,6 @@
+import time
+import serial
+
 srcMyself = 'p'
 destArduino = 'a'
 crcDefault = '.'
@@ -68,6 +71,53 @@ class packet:
 
     def setType(self,msgType):
         self.type = msgType
+        
+def packetSend(msgData, msgType):
+    
+    out = ''
+    portSerialName = '/dev/ttyUSB1'
+    baudRateValue = 9600
+    
+    try:
+        ser = serial.Serial(portSerialName,9600)
+      ##ser = serial.Serial(
+       ## port=portSerialName,
+       ## baudrate=baudRateValue,
+       ## parity=serial.PARITY_ODD,
+       ## stopbits=serial.STOPBITS_TWO,
+      ##  bytesize=serial.SEVENBITS
+      ##  )
+     ## ser.isOpen()
+    except serial.SerialException:
+      print("Device not connected")
+      return "NULL"
+      
+    pkt = packet()
+    pkt.setType(msgType)
+    pkt.setData(msgData)
+    pkt.calculateCrc()
+
+    stringToSend = pkt.packetToString()
+    print(stringToSend)     
+
+    no = ser.write(stringToSend.encode())
+    print("%i bytes written on serial" % no)
+    time.sleep(2)
+    
+    ##while (ser.inWaiting() > 0):
+              ##out = ser.read(10)
+      #  out = ser.read(6)
+    #out = ser.read(ser.inWaiting())
+    while True:
+        print(ser.readline())
+    if (out != ''):
+      print(out.decode())
+      ser.close()
+      return out
+    else:
+      ser.close()
+      return "Nothing received"
+
 
 
 

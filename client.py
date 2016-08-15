@@ -1,7 +1,9 @@
 import socket
 import sys
+import packet
 
 OK = '1'
+msgLen = 3
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -27,21 +29,26 @@ try:
     
     while amount_received < amount_expected:
         data = sock.recv(1)
-        amount_received = len(data)
+        amount_received += len(data)
 
     if data == OK: 
             # Send data
-            message = '0123456789012345'
+            #message = '0123456789012345'
+            msgData = raw_input("Enter data:(no more than 2 chars): ")[:2]
+            msgType  = raw_input("Select message type:(0 - get,1 - set):")[:1]
+
+            message = msgData + msgType
             print >>sys.stderr, 'sending "%s"' % message
             sock.sendall(message)
             # Look for the response
             amount_received = 0
-            amount_expected = len(message)
+            amount_expected = msgLen
 
             while amount_received < amount_expected:
-                data = sock.recv(len(message))
+                data = sock.recv(msgLen)
                 amount_received += len(data)
-                print >>sys.stderr, 'received "%s"' % data
+                
+            print >>sys.stderr, 'received "%s"' % data
     else:
         print("AUTHENTICATION FAILED")
 
