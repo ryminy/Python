@@ -26,10 +26,10 @@ while True:
       # Receive the data in small chunks and retransmit it
       #read messages
       data = connection.recv(1)
-      print(data.decode())
+      print('data received from client: ' + data.decode())
       output = packetSendAndReceive(data)
       
-      print('sending data back to the client')
+      print('sending data back to the client: ' + output)
       connection.send(output)
 	      
       # Clean up the connection

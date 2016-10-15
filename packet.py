@@ -15,9 +15,10 @@ def packetSendAndReceive(data):
       return "X".encode()
     
     no = ser.write(data)
-    time.sleep(.2)
+    print('am scris pe fir ' + str(no) + ' caractere') 
+    time.sleep(1)
 
-    out = ser.readline()
+    out = ser.read()
     ser.close()
     return out
 
