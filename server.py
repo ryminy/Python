@@ -37,8 +37,8 @@ while True:
       
       if (out.decode().strip() == "R"):
           out = Arduino.readSerial(ser)
-          
-      print('sending data back to the client:' + str(ord(out.decode().strip())))
+      print(ord(out.decode()[1]))
+      #print('sending data back to the client:' + str(ord(out.decode())))
 
       connection.send(out)
 	      

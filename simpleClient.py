@@ -34,7 +34,7 @@ while True:
       
       data = s.recv(1)
       s.close()
-      print("received from server:" + str(ord(data.decode())))      
+      print("received from server:" + str(ord(data.decode()[0])))      
 	
     except KeyboardInterrupt:
      print("silently dying")
