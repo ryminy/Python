@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-
+import commands
 """
 An echo client that allows the user to send a char to the server.
 Entering 'x' will exit the client.
@@ -17,31 +16,31 @@ while True:
     try:
 
       # read from keyboard
-      val = input("please enter a char:")
-      if val == 'x':
+      val = commands.encodeCommand()
+      #Val = input("please enter a char:")
+      if val == -1:
+       print('invalid input');
+       print('EXITING!')
        break
-     
-      if val < '0':
-       break
-      
-      if val > 'z':
-       break
+      else:
+       print('Command is:' + str(val))
+
      
       print("connection to server")
       s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       s.connect((host,port))
       
-      s.send(val.encode())
+      s.send(chr(val).encode())
       
-      print("receiving from server")
       data = s.recv(1)
       s.close()
-
-      print(data.decode())
-      
+      print("received from server:" + str(ord(data.decode())))      
 	
     except KeyboardInterrupt:
      print("silently dying")
      break
-
-s.close() 
+    
+try:
+    s.close()
+except:
+    print('Caught an exception while closing')

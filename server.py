@@ -1,9 +1,9 @@
 import socket
 import sys
-import packet
+import time
+import Arduino
 
-from packet import packetSendAndReceive
-
+    
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -15,6 +15,11 @@ sock.bind(server_address)
 # Listen for incoming connections
 sock.listen(10)
 
+ser = Arduino.openSerial()
+if( ser == 'X'):
+    exit
+
+
 while True:
     try:
       # Wait for a connection
@@ -23,14 +28,19 @@ while True:
       
       print('connection from ', client_address)
 
-      # Receive the data in small chunks and retransmit it
-      #read messages
       data = connection.recv(1)
-      print('data received from client: ' + data.decode())
-      output = packetSendAndReceive(data)
+      print('received from client:' + str(ord(data.decode())))
+      Arduino.writeSerial(ser,data)
+      time.sleep(.2)
+
+      out = Arduino.readSerial(ser)
       
-      print('sending data back to the client: ' + output)
-      connection.send(output)
+      if (out.decode().strip() == "R"):
+          out = Arduino.readSerial(ser)
+          
+      print('sending data back to the client:' + str(ord(out.decode().strip())))
+
+      connection.send(out)
 	      
       # Clean up the connection
       print('Connection closed with', client_address)
@@ -39,7 +49,10 @@ while True:
     except KeyboardInterrupt:
       print("silently dying")
       break
-    
-connection.close()
-sock.close()
 
+try:    
+    Arduino.closeSerial(ser)
+    connection.close()
+    sock.close()
+except:
+    print('Caught an exception while exiting')
